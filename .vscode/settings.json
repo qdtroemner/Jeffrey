@@ -1,5 +1,0 @@
-{
-	"python.pythonPath": "C:\\Users\\qdtro\\AppData\\Local\\Programs\\Python\\Python37\\python.exe",
-	"**/*.pyc": {"when": "$(basename).py"}, 
-	"**/__pycache__": true
-}
