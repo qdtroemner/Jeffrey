@@ -16,7 +16,6 @@ class TextCommands(commands.Cog):
 	async def send_random_metadata(self, ctx):
 		try:	
 			data = get_random_song()["response"]["song"]
-			# print(data)
 			title = data["title"]
 			album = data["album"]["name"]
 			url = data["url"]
@@ -35,6 +34,7 @@ class TextCommands(commands.Cog):
 				await self.send_random_metadata(ctx)
 		except TypeError as t_error:
 			await self.send_random_metadata(ctx)
+
 
 	@commands.command(decription='Jeffery greets you')
 	async def hello(self, ctx):
@@ -118,7 +118,6 @@ class TextCommands(commands.Cog):
 					album_cover = activity.album_cover_url
 					duration = activity.duration
 					start_time = activity.created_at
-					print(start_time)
 
 					embed = discord.Embed(title=title, description=author, colour=activity.color)
 					embed.set_author(name=album)
@@ -127,6 +126,68 @@ class TextCommands(commands.Cog):
 					embed.set_image(url=album_cover)
 					embed.set_footer(text=duration)
 					await ctx.send(embed=embed)
+
+	@commands.command(description="Jeffrey sends a user's general Discord activity.")
+	async def activity(self, ctx):
+		if ctx.message.mentions:
+			user = ctx.message.mentions[0]
+		else:
+			user = ctx.author
+
+		if user.activities:
+			pfp = user.avatar_url
+			for activity in user.activities:
+				if isinstance(activity, discord.Spotify):
+					title = activity.title
+					album = activity.album
+					# url = activity.track_id
+					author = activity.artist
+					album_cover = activity.album_cover_url
+					duration = activity.duration
+					start_time = activity.created_at
+
+					embed = discord.Embed(title=title, description=author, colour=activity.color)
+					embed.set_author(name=album)
+					# embed.add_field(name="Lyrics", value="words, words, words", inline=False)
+					embed.set_thumbnail(url=pfp)
+					embed.set_image(url=album_cover)
+					embed.set_footer(text=duration)
+				elif isinstance(activity, discord.Game):
+					title = activity.name
+					name = f"{user}'s Activity"
+
+					# discord.Embed.Empty
+					embed = discord.Embed(title=title, description=discord.Embed.Empty, url=discord.Embed.Empty, colour=discord.Colour.from_hsv(random(), 1, 1))
+					embed.set_author(name=name, icon_url=discord.Embed.Empty)
+					# embed.add_field(name="Activity", value=text, inline=False)
+					embed.set_thumbnail(url=pfp)
+					# embed.set_image(url=image)
+					# embed.set_footer(text=duration)
+				elif isinstance(activity, discord.Streaming):
+					embed = discord.Embed(title='test')
+				else:
+					name = f"{user}'s Activity"
+					title = activity.name
+					# type = activity.type
+
+					if isinstance(activity.emoji, discord.PartialEmoji):
+						title = f"{activity.emoji} {title}"
+
+					embed = discord.Embed(title=title, colour=discord.Colour.from_hsv(random(), 1, 1))
+					embed.set_thumbnail(url=pfp)
+					# about = activity.state
+					# url = activity.url
+					
+					icon = discord.Embed.Empty
+					if hasattr(activity, 'small_image_url'):
+						icon = activity.small_image_url
+					embed.set_author(name=name, icon_url=icon)
+					if hasattr(activity, 'details'):
+						embed.add_field(name="Details", value=activity.details, inline=False)
+					if hasattr(activity, 'large_image_url'):
+						embed.set_image(url=activity.large_image_url)
+					# embed.set_footer(text=duration)"""
+				await ctx.send(embed=embed)
 
 	@commands.command(decription='Jeffery sends you a random song.')
 	async def song(self, ctx):
