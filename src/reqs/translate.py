@@ -1,33 +1,5 @@
-"""
-alphabet = {
-	"a": "aa",
-	"b": "ae",
-	"c": "ai",
-	"d": "yh",	#
-	"e": "hh",	#
-	"f": "ao",
-	"g": "au",
-	"h": "ea",
-	"i": "ee",
-	"j": "ei",
-	"k": "eo",
-	"l": "eu",
-	"m": "ia",
-	"n": "ie",
-	"o": "ii",
-	"p": "io",
-	"q": "iu",
-	"r": "oa",
-	"s": "ah",	#
-	"t": "oh",	#
-	"u": "ho",
-	"v": "he",
-	"w": "eh",
-	"x": "hi",
-	"y": "ha",
-	"z": "hu",
-}
-"""
+import re
+
 alphabet = {
 	"a": "ooo",
 	"b": "aaaah",
@@ -103,4 +75,14 @@ def translateToEnglish(phrase):
 		else:
 			output += monkeyLetter
 
+	return output
+
+def emojify(phrase):
+	output = ''
+	for letter in list(phrase):
+		if re.match('[a-zA-Z]', letter):
+			output += f":regional_indicator_{letter.lower()}:"
+		else:
+			output += letter
+	
 	return output
