@@ -84,3 +84,10 @@ fart = [
     'https://tenor.com/view/shameful-shame-monkey-fart-gif-9905673',
     'https://tenor.com/view/monkey-fart-gif-13114225'
 ]
+appreciation_responses = [
+	"you're welcome",
+	"np, ilysm :heart:",
+	":two_hearts:",
+	"my pleasure :smirk:",
+	":banana:"
+]

@@ -35,7 +35,6 @@ class TextCommands(commands.Cog):
 		except TypeError as t_error:
 			await self.send_random_metadata(ctx)
 
-
 	@commands.command(decription='Jeffery greets you')
 	async def hello(self, ctx):
 		await ctx.send(choice(jeffreyActions.greetings))
@@ -109,7 +108,7 @@ class TextCommands(commands.Cog):
 					if hasattr(emoji, 'url'):
 						emoji_url = emoji.url
 						author_icon = emoji_url
-					if emoji: # In case it's None
+					else: # In case it's None
 						title = f"{emoji} {title}"
 
 				embed = discord.Embed(title=title, colour=discord.Colour.from_hsv(random(), 1, 1))
@@ -211,7 +210,7 @@ class TextCommands(commands.Cog):
 						if hasattr(emoji, 'url'):
 							emoji_url = emoji.url
 							author_icon = emoji_url
-						if emoji: # In case it's None
+						if emoji and emoji != None: # In case it's None
 							title = f"{emoji} {title}"
 					
 				elif activity.type == discord.ActivityType.streaming:
@@ -304,12 +303,11 @@ class TextCommands(commands.Cog):
 	async def emojify(self, ctx, text):
 		if text and type(text) == str:
 			await ctx.send(translate.emojify(text))
+			await ctx.send(f"```{translate.emojify(text)}```")
 
-	"""
-	@commands.command(decription='Jeffery sends you Spotify song lyrics.')
-	async def test(self, ctx):
-		embed = discord.Embed(title='')
-	"""
+	@commands.command(aliases=['thanks', 'ty', 'tysm', 'gracias'], description='You thank Jeffrey.')
+	async def thank(self, ctx):
+		await ctx.send(choice(jeffreyActions.appreciation_responses))
 
 def setup(bot):
 	bot.add_cog(TextCommands(bot))

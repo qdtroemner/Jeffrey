@@ -81,7 +81,7 @@ def emojify(phrase):
 	output = ''
 	for letter in list(phrase):
 		if re.match('[a-zA-Z]', letter):
-			output += f":regional_indicator_{letter.lower()}:"
+			output += f":regional_indicator_{letter.lower()}: "
 		else:
 			output += letter
 	
