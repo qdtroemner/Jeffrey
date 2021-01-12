@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.ext.commands.core import command
 from discord import Spotify
 
-from reqs import jeffreyActions, facts, translate
+from reqs import jeffreyActions, facts, translate, secrets
 from reqs.random_lyrics import get_random_song, get_lyrics
 from requests import get
 from random import random, choice, randint
@@ -12,6 +12,9 @@ from datetime import datetime
 class TextCommands(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+		self.ZERO_WIDTH_SPACE = "​"
+
+	# @commands.Cog.listener()
 
 	async def send_random_metadata(self, ctx):
 		try:	
@@ -68,12 +71,12 @@ class TextCommands(commands.Cog):
 		await ctx.send(facts.getFact())
 
 	@commands.command(description='Jeffrey translates phrase to monkey language')
-	async def monkify(self, ctx, phrase):
-		await ctx.send(translate.translateToMonkey(phrase))
+	async def monkify(self, ctx, *, arg):
+		await ctx.send(translate.translateToMonkey(arg))
 
 	@commands.command(description='Jeffrey translates monkey language to English')
-	async def demonkify(self, ctx, phrase):
-		await ctx.send(translate.translateToEnglish(phrase))
+	async def demonkify(self, ctx, *, arg):
+		await ctx.send(translate.translateToEnglish(arg))
 
 	@commands.command(description='Jeffrey sends a random Roblox profile')
 	async def roblox(self, ctx):
@@ -105,11 +108,12 @@ class TextCommands(commands.Cog):
 				icon = discord.Embed.Empty
 				if hasattr(activity, 'emoji'):
 					emoji = activity.emoji
-					if hasattr(emoji, 'url'):
-						emoji_url = emoji.url
-						author_icon = emoji_url
-					else: # In case it's None
-						title = f"{emoji} {title}"
+					if emoji != None:
+						if hasattr(emoji, 'url'):
+							emoji_url = emoji.url
+							author_icon = emoji_url
+						else: # In case it's None
+							title = f"{emoji} {title}"
 
 				embed = discord.Embed(title=title, colour=discord.Colour.from_hsv(random(), 1, 1))
 				embed.set_author(name=user, icon_url=icon)
@@ -154,7 +158,6 @@ class TextCommands(commands.Cog):
 		if user.activities:
 			pfp = user.avatar_url
 			for activity in user.activities:
-				print(activity, activity.type)
 				EMPTY = discord.Embed.Empty
 				title = activity.name
 				desc = None
@@ -261,8 +264,6 @@ class TextCommands(commands.Cog):
 			user = ctx.author
 
 		if user.activities:
-			print(user.activities)
-
 			for activity in user.activities:
 				if isinstance(activity, discord.Spotify):
 					artist = activity.artists[0]
@@ -276,7 +277,8 @@ class TextCommands(commands.Cog):
 						embed.set_thumbnail(url=thumbnail)
 						# embed.set_author(name=artist)
 						for verse in lyrics:
-							embed.add_field(name="​", value=verse or "None, missing, or recently requested.", inline=False)
+							embed.add_field(name=self.ZERO_WIDTH_SPACE, value=verse or "None, missing, or recently requested.", inline=False)
+							print(verse + "\n\t")
 						try:
 							await ctx.send(embed=embed)
 						except Exception as error:
@@ -300,14 +302,54 @@ class TextCommands(commands.Cog):
 			await ctx.send(f"{user} does not have Discord Nitro.")
 
 	@commands.command(description='Turns text into emojis.')
-	async def emojify(self, ctx, text):
-		if text and type(text) == str:
-			await ctx.send(translate.emojify(text))
-			await ctx.send(f"```{translate.emojify(text)}```")
+	async def emojify(self, ctx, *, arg):
+		if arg and type(arg) == str:
+			await ctx.send(translate.emojify(arg))
+			await ctx.send(f"```{translate.emojify(arg)}```")
 
 	@commands.command(aliases=['thanks', 'ty', 'tysm', 'gracias'], description='You thank Jeffrey.')
 	async def thank(self, ctx):
 		await ctx.send(choice(jeffreyActions.appreciation_responses))
+
+	@commands.command(aliases=['say'], description='Jeffrey says something on your behalf.')
+	async def speak(self, ctx, *, arg):
+		await ctx.message.delete()
+		await ctx.send(arg)
+
+	@commands.command(description='Jeffrey shares wisdom.')
+	async def wisdom(self, ctx):
+		url = 'http://yerkee.com/api/fortune/cookie'
+		data = get(url).json()
+		wisdom = data["fortune"]
+		await ctx.send(wisdom)
+
+	@commands.command(description='Jeffrey inspires you with Kanye quotes.')
+	async def kanye(self, ctx):
+		url = 'https://api.kanye.rest/'
+		data = get(url).json()
+		quote = data["quote"]
+		await ctx.send(f"*{quote}* - Kanye West")
+
+	@commands.command(aliases=['gs', 'gifs', 'sgif', 'searchgif'], description='Jeff searches the GIF catalogue. monke gif <query> [quantity]')
+	async def gifsearch(self, ctx, *, arg):
+		TENOR_TOKEN = secrets.TENOR_TOKEN
+		query = arg
+		quantity = 1
+		args = arg.split(" ")
+		
+		if len(args) > 1:
+			quantity = args[0]
+			query = ""
+			for word in args[1:-1]:
+				query += word + " "
+
+		req = get(f"https://api.tenor.com/v1/search?q={query}&key={TENOR_TOKEN}&limit={quantity}")
+		if req.status_code == 200:
+			data = req.json()
+			media = data["results"][0]["media"]
+			for gif in media:
+				gif = gif["gif"]
+				await ctx.send(gif["url"])
 
 def setup(bot):
 	bot.add_cog(TextCommands(bot))

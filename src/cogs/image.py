@@ -91,5 +91,14 @@ class ImageCommands(commands.Cog):
 				# Send bytes as a file
 				await ctx.send(file=discord.File(self.cv2_to_file(colormap), filename='output.jpg'))
 
+	@commands.command(description='Jeffrey sends a profile picture.')
+	async def pfp(self, ctx):
+		if ctx.message.mentions:
+			user = ctx.message.mentions[0]
+		else:
+			user = ctx.author
+
+		await ctx.send(user.avatar_url)
+
 def setup(bot):
 	bot.add_cog(ImageCommands(bot))
