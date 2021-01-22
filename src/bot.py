@@ -19,7 +19,7 @@ INTENTS = discord.Intents().all() # Allows for fetching of Spotify / activity in
 class Client(commands.Bot):
 	def __init__(self):
 		super().__init__(
-			command_prefix=('monke ', 'jeffrey ', '$'),
+			command_prefix=('monke ', 'jeffrey ', '*'),
 			case_insensitive=True,
 			intents=INTENTS
 		)

@@ -45,6 +45,8 @@ class ImageCommands(commands.Cog):
 				heatmap = cv2.applyColorMap(gray, cv2.COLORMAP_JET)
 				# Send bytes as a file
 				await ctx.send(file=discord.File(self.cv2_to_file(heatmap), filename='output.jpg'))
+		#elif ctx.message.mentions:
+		#	for mention in ctx.message.mentions:	
 
 	@commands.command(aliases=['ir'], description='Jeffrey turns your image infrared.')
 	async def infrared(self, ctx):
